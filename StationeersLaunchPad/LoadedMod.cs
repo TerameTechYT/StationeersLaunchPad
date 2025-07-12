@@ -203,7 +203,15 @@ namespace StationeersLaunchPad
         var gameObj = new GameObject();
         GameObject.DontDestroyOnLoad(gameObj);
         var component = gameObj.AddComponent(type);
-        method.Invoke(component, new object[] { this.Prefabs });
+
+        try
+        {
+          method.Invoke(component, new object[] { this.Prefabs });
+        }
+        catch (Exception ex) {
+          this.Logger.LogError($"method {method.Name} experienced an error while executing.");
+          this.Logger.LogException(ex);
+        }
       }
 
       this.ConfigFiles.Sort((a, b) => a.ConfigFilePath.CompareTo(b.ConfigFilePath));
