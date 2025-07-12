@@ -159,7 +159,7 @@ namespace StationeersLaunchPad
       var result = new List<(Type, MethodInfo)>();
       foreach (var assembly in assemblies)
       {
-        var failed = true;
+        var failed = false;
 
         var name = assembly.GetName().Name;
         var type = assembly.GetType(name);
