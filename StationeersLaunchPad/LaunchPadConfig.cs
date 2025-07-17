@@ -873,15 +873,8 @@ namespace StationeersLaunchPad
       changed = value switch
       {
         Color => DrawColorEntry(entry as ConfigEntry<Color>),
-        Color32 => DrawColor32Entry(entry as ConfigEntry<Color32>),
-
         Vector2 => DrawVector2Entry(entry as ConfigEntry<Vector2>),
-        Vector2Int => DrawVector2IntEntry(entry as ConfigEntry<Vector2Int>),
-
         Vector3 => DrawVector3Entry(entry as ConfigEntry<Vector3>),
-        Vector3d => DrawVector3DoubleEntry(entry as ConfigEntry<Vector3d>),
-        Vector3Int => DrawVector3IntEntry(entry as ConfigEntry<Vector3Int>),
-
         Vector4 => DrawVector4Entry(entry as ConfigEntry<Vector4>),
 
         Enum => DrawEnumEntry(entry, value as Enum),
@@ -948,47 +941,6 @@ namespace StationeersLaunchPad
       return changed;
     }
 
-    private static bool DrawColor32Entry(ConfigEntry<Color32> entry)
-    {
-      ImGuiHelper.Text("");
-      var changed = false;
-
-      var value = entry.Value;
-      var r = (int) value.r;
-      ImGuiHelper.Text("Red:");
-      if (ImGui.SliderInt("##colorvaluer", ref r, 0, 255))
-      {
-        entry.BoxedValue = new Color32((byte) r, value.g, value.b, value.a);
-        changed = true;
-      }
-
-      var g = (int) value.g;
-      ImGuiHelper.Text("Green:");
-      if (ImGui.SliderInt("##colorvalueg", ref g, 0, 255))
-      {
-        entry.BoxedValue = new Color32(value.r, (byte) g, value.b, value.a);
-        changed = true;
-      }
-
-      var b = (int) value.b;
-      ImGuiHelper.Text("Blue:");
-      if (ImGui.SliderInt("##colorvalueb", ref b, 0, 255))
-      {
-        entry.BoxedValue = new Color32(value.g, value.g, (byte) b, value.a);
-        changed = true;
-      }
-
-      var a = (int) value.b;
-      ImGuiHelper.Text("Alpha:");
-      if (ImGui.SliderInt("##colorvaluea", ref a, 0, 255))
-      {
-        entry.BoxedValue = new Color32(value.r, value.g, value.b, (byte) a);
-        changed = true;
-      }
-
-      return changed;
-    }
-
     private static bool DrawVector2Entry(ConfigEntry<Vector2> entry)
     {
       var changed = false;
@@ -1009,32 +961,6 @@ namespace StationeersLaunchPad
       if (ImGui.InputFloat("##vector2valuey", ref y))
       {
         entry.BoxedValue = new Vector2(value.x, y);
-        changed = true;
-      }
-
-      return changed;
-    }
-
-    private static bool DrawVector2IntEntry(ConfigEntry<Vector2Int> entry)
-    {
-      var changed = false;
-
-      var value = entry.Value;
-      var x = value.x;
-      ImGuiHelper.Text("X:");
-      ImGui.SameLine();
-      if (ImGui.InputInt("##vector2intvaluex", ref x))
-      {
-        entry.BoxedValue = new Vector2Int(x, value.y);
-        changed = true;
-      }
-
-      var y = value.y;
-      ImGuiHelper.Text("Y:");
-      ImGui.SameLine();
-      if (ImGui.InputInt("##vector2intvaluey", ref y))
-      {
-        entry.BoxedValue = new Vector2Int(value.x, y);
         changed = true;
       }
 
@@ -1114,77 +1040,6 @@ namespace StationeersLaunchPad
       if (ImGui.InputFloat("##vector4valuew", ref w))
       {
         entry.BoxedValue = new Vector4(value.x, value.y, value.z, w);
-        changed = true;
-      }
-
-      return changed;
-    }
-
-
-    private static bool DrawVector3DoubleEntry(ConfigEntry<Vector3d> entry)
-    {
-      var changed = false;
-
-      var value = entry.Value;
-      var x = value.x;
-      ImGuiHelper.Text("X:");
-      ImGui.SameLine();
-      if (ImGui.InputDouble("##vector3dvaluex", ref x))
-      {
-        entry.BoxedValue = new Vector3d(x, value.y, value.z);
-        changed = true;
-      }
-
-      var y = value.y;
-      ImGuiHelper.Text("Y:");
-      ImGui.SameLine();
-      if (ImGui.InputDouble("##vector3dvaluey", ref y))
-      {
-        entry.BoxedValue = new Vector3d(value.x, y, value.z);
-        changed = true;
-      }
-
-      var z = value.z;
-      ImGuiHelper.Text("Z:");
-      ImGui.SameLine();
-      if (ImGui.InputDouble("##vector3dvaluez", ref z))
-      {
-        entry.BoxedValue = new Vector3d(value.x, value.y, z);
-        changed = true;
-      }
-
-      return changed;
-    }
-
-    private static bool DrawVector3IntEntry(ConfigEntry<Vector3Int> entry)
-    {
-      var changed = false;
-
-      var value = entry.Value;
-      var x = value.x;
-      ImGuiHelper.Text("X:");
-      ImGui.SameLine();
-      if (ImGui.InputInt("##vector3intvaluex", ref x))
-      {
-        entry.BoxedValue = new Vector3Int(x, value.y, value.z);
-        changed = true;
-      }
-
-      var y = value.y;
-      ImGuiHelper.Text("Y:");
-      ImGui.SameLine();
-      if (ImGui.InputInt("##vector3intvaluey", ref y))
-      {
-        entry.BoxedValue = new Vector3Int(value.x, y, value.z);
-        changed = true;
-      }
-
-      var z = value.z;
-      ImGuiHelper.Text("Z:");
-      ImGui.SameLine();
-      if (ImGui.InputInt("##vector3intvaluez", ref z))
-      {
-        entry.BoxedValue = new Vector3Int(value.x, value.y, z);
         changed = true;
       }
 
