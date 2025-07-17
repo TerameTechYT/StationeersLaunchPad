@@ -871,8 +871,6 @@ namespace StationeersLaunchPad
       var value = entry.BoxedValue;
       changed = value switch
       {
-        KeyCode => DrawKeyCodeEntry(entry as ConfigEntry<KeyCode>),
-
         Enum => DrawEnumEntry(entry, value as Enum),
         string => DrawStringEntry(entry as ConfigEntry<string>),
         char => DrawCharEntry(entry as ConfigEntry<char>),
@@ -894,50 +892,6 @@ namespace StationeersLaunchPad
       ImGui.EndGroup();
       ImGui.PopID();
       ImGuiHelper.ItemTooltip(entry.Description.Description, 600f);
-      return changed;
-    }
-
-    private static bool keyCodeMode = false;
-    private static bool DrawKeyCodeEntry(ConfigEntry<KeyCode> entry)
-    {
-      var changed = false;
-      var value = entry.Value;
-      var type = value.GetType();
-      var values = Enum.GetValues(type);
-      var names = Enum.GetNames(type);
-      var index = -1;
-
-      if (keyCodeMode)
-      {
-        for (var i = 0; i < values.Length; i++)
-        {
-          var val = (KeyCode) values.GetValue(i);
-          ImGuiHelper.TextDisabled("Press any key.");
-          if (KeyManager.GetButton(val))
-          {
-            entry.Value = val;
-            changed = true;
-            keyCodeMode = false;
-          }
-        }
-      }
-      else
-      {
-        for (var i = 0; i < values.Length; i++)
-        {
-          if (values.GetValue(i).Equals(value))
-          {
-            index = i;
-            break;
-          }
-        } 
-
-        if (ImGui.Button((string) names.GetValue(index)))
-        {
-          keyCodeMode = true;
-        }
-      }
-
       return changed;
     }
 
