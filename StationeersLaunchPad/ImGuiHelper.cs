@@ -46,7 +46,7 @@ namespace StationeersLaunchPad
       var width = ImGui.CalcTextSize(text).x;
       ImGui.SetCursorPosX(maxCorner.x - padding - width);
       var minCorner = ImGui.GetCursorPos();
-      ImGui.GetWindowDrawList().AddRectFilled(minCorner, maxCorner, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)));
+      ImGui.GetWindowDrawList().AddRectFilled(minCorner, maxCorner, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0)));
       TextColored(text, color);
     }
 
