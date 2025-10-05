@@ -5,7 +5,7 @@
     <TargetFramework>net48</TargetFramework>
     <LangVersion>latest</LangVersion>
     <OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
-    <StationeersDirectory>Z:\Steam\steamapps\common\Stationeers\</StationeersDirectory>
+    <StationeersDirectory>$(MSBuildProgramFiles32)\Steam\steamapps\common\Stationeers\</StationeersDirectory>
     <StationeersLibraryDirectory>$(StationeersDirectory)rocketstation_Data\Managed\</StationeersLibraryDirectory>
     <UserDir>$(HOMEDRIVE)$(HOMEPATH)</UserDir>
     <MyStationeersDir>$(UserDir)\Documents\My Games\Stationeers\</MyStationeersDir>
