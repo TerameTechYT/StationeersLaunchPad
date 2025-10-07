@@ -27,7 +27,7 @@ namespace StationeersLaunchPad
   {
     public const string pluginGuid = "stationeers.launchpad";
     public const string pluginName = "StationeersLaunchPad";
-    public const string pluginVersion = "0.2.14";
+    public const string pluginVersion = "0.2.15";
 
     private static Harmony harmony;
 
