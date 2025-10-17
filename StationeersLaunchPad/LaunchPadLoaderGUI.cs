@@ -149,7 +149,7 @@ namespace StationeersLaunchPad
           if (ConfigChanged)
           {
             if (LaunchPadConfig.AutoSort)
-              LaunchPadConfig.SortByDeps();
+              LaunchPadConfig.SortDependencies();
 
             LaunchPadConfig.SaveConfig();
           }

@@ -321,7 +321,7 @@ namespace StationeersLaunchPad
         await LoadDetails();
 
         if (AutoSort)
-          SortByDeps();
+          SortDependencies();
 
         Logger.Global.LogInfo("Mod Config Initialized");
 
@@ -571,117 +571,162 @@ namespace StationeersLaunchPad
       }
     }
 
-    public static void SortByDeps()
+    public static void SortDependencies()
     {
-      var beforeDeps = new Dictionary<int, List<int>>();
+      var beforeDeps = new Dictionary<int, HashSet<int>>();
       var modsById = new Dictionary<ulong, int>();
-      void addDep(int from, int to)
-      {
-        if (from == to)
-          return;
-        var list = beforeDeps.GetValueOrDefault(from) ?? new();
-        if (!list.Contains(to))
-          list.Add(to);
-        beforeDeps[from] = list;
-      }
+
+      // Build mod index and lookup table
       for (var i = 0; i < Mods.Count; i++)
       {
         var mod = Mods[i];
         mod.SortIndex = i;
+
         if (!mod.Enabled)
         {
           mod.DepsWarned = false;
           continue;
         }
 
-        if (mod.Source == ModSource.Core)
-          modsById[1] = mod.SortIndex;
-        else if (mod.About.WorkshopHandle != 0)
-          modsById[mod.About.WorkshopHandle] = i;
+        if (mod.WorkshopHandle != 0)
+          modsById[mod.WorkshopHandle] = i;
       }
-      foreach (var mod in Mods)
+
+      // Helper to add dependency edge
+      void AddDep(int from, int to)
       {
+        if (from == to)
+          return;
+
+        if (!beforeDeps.TryGetValue(from, out var set))
+        {
+          set = new HashSet<int>();
+          beforeDeps[from] = set;
+        }
+
+        set.Add(to);
+      }
+
+      // Build dependency graph
+      for (var i = 0; i < Mods.Count; i++)
+      {
+        var mod = Mods[i];
         if (!mod.Enabled)
           continue;
-        if (mod.Source == ModSource.Core)
+
+        var about = mod.About;
+        if (about == null)
           continue;
-        bool missingDeps = false;
-        foreach (var dep in mod.About.Dependencies ?? new())
-          if (!modsById.ContainsKey(dep.Id))
+
+        // Warn about missing dependencies
+        if (about.Dependencies != null)
+        {
+          for (var j = 0; j < about.Dependencies.Count; j++)
           {
-            missingDeps = true;
-            if (!mod.DepsWarned)
+            var dep = about.Dependencies[j];
+            if (!modsById.ContainsKey(dep.Id))
             {
-              Logger.Global.LogWarning($"{mod.Source} {mod.DisplayName} is missing dependency with workshop id {dep.Id}");
-              var found = false;
-              foreach (var mod2 in Mods)
+              if (!mod.DepsWarned)
               {
-                if (mod2.About?.WorkshopHandle == dep.Id)
+                mod.DepsWarned = true;
+                Logger.Global.LogWarning($"{mod.Source} {mod.DisplayName} is missing dependency with workshop id {dep.Id}");
+
+                var found = false;
+                for (var k = 0; k < Mods.Count; k++)
                 {
-                  if (!found)
-                    Logger.Global.LogWarning("Possible matches:");
-                  found = true;
-                  Logger.Global.LogWarning($"- {mod2.Source} {mod2.DisplayName}");
+                  var dependency = Mods[k];
+                  if (dependency.WorkshopHandle == dep.Id)
+                  {
+                    if (!found)
+                      Logger.Global.LogWarning("Possible matches:");
+                    found = true;
+                    Logger.Global.LogWarning($"- {dependency.Source} {dependency.DisplayName}");
+                  }
                 }
+                if (!found)
+                  Logger.Global.LogWarning("No possible matches installed");
               }
-              if (!found)
-                Logger.Global.LogWarning("No possible matches installed");
             }
           }
-        mod.DepsWarned = missingDeps;
-
-        // LoadBefore and LoadAfter inherited from StationeersMods are the opposite of what you would expect.
-        // LoadBefore is other mods that should be loaded before this one.
-        // LoadAfter is other mods that should be loaded after this one.
-        foreach (var before in mod.About.LoadBefore ?? new())
-          if (modsById.TryGetValue(before.Id, out var beforeIndex))
-            addDep(mod.SortIndex, beforeIndex); // before before mod
-        foreach (var after in mod.About.LoadAfter ?? new())
-          if (modsById.TryGetValue(after.Id, out var afterIndex))
-            addDep(afterIndex, mod.SortIndex); // mod before after
-      }
-
-      var visited = new bool[Mods.Count];
-      var circularList = new List<int>();
-      bool checkCircular(int index)
-      {
-        if (visited[index])
-        {
-          circularList.Add(index);
-          return true;
         }
-        visited[index] = true;
-        foreach (var before in beforeDeps.GetValueOrDefault(index) ?? new())
+
+        // LoadBefore (mods that should load before this one)
+        var loadBefore = about.LoadBefore;
+        if (loadBefore != null)
         {
-          if (checkCircular(before))
+          for (var j = 0; j < loadBefore.Count; j++)
           {
-            circularList.Add(index);
-            return true;
+            var before = loadBefore[j];
+            if (modsById.TryGetValue(before.Id, out var beforeIndex))
+              AddDep(mod.SortIndex, beforeIndex);
           }
         }
-        visited[index] = false;
-        return false;
-      }
 
-      var foundCircular = false;
-      foreach (var mod in Mods)
-      {
-        if (!mod.Enabled)
-          continue;
-
-        if (checkCircular(mod.SortIndex))
+        // LoadAfter (mods that should load after this one)
+        var loadAfter = about.LoadAfter;
+        if (loadAfter != null)
         {
-          foundCircular = true;
-          break;
+          for (var j = 0; j < loadAfter.Count; j++)
+          {
+            var after = loadAfter[j];
+            if (modsById.TryGetValue(after.Id, out var afterIndex))
+              AddDep(afterIndex, mod.SortIndex);
+          }
         }
       }
 
-      if (foundCircular)
+      //  Stable topological sort
+      var resultEnabled = new List<ModInfo>();
+      var state = new int[Mods.Count]; // 0=unvisited, 1=visiting, 2=done
+      var stack = new Stack<int>();
+      var hasCycle = false;
+
+      bool Visit(int idx)
+      {
+        if (state[idx] == 2)
+          return true;
+        if (state[idx] == 1)
+        {
+          stack.Push(idx);
+          hasCycle = true;
+          return false;
+        }
+
+        state[idx] = 1;
+        stack.Push(idx);
+
+        if (beforeDeps.TryGetValue(idx, out var deps))
+        {
+          // Iterate in ascending SortIndex order for stability
+          // (HashSet has no inherent order, so we sort temporarily)
+          var sorted = deps.OrderBy(d => d); // creates a temp iterator once per mod
+          foreach (var dep in sorted)
+          {
+            if (!Visit(dep))
+              return false;
+          }
+        }
+
+        state[idx] = 2;
+        stack.Pop();
+        resultEnabled.Add(Mods[idx]);
+        return true;
+      }
+
+      // Visit in original order to keep independent mods stable
+      for (var i = 0; i < Mods.Count && !hasCycle; i++)
+      {
+        var mod = Mods[i];
+        if (mod.Enabled && state[i] == 0)
+          Visit(i);
+      }
+
+      if (hasCycle)
       {
         Logger.Global.LogError("Circular dependency found in enabled mods:");
-        for (var i = circularList.Count - 1; i >= 0; i--)
+        foreach (var idx in stack)
         {
-          var mod = Mods[circularList[i]];
+          var mod = Mods[idx];
           Logger.Global.LogError($"- {mod.Source} {mod.DisplayName}");
         }
         AutoLoad = false;
@@ -689,55 +734,28 @@ namespace StationeersLaunchPad
         return;
       }
 
-      // loop over all mods repeatedly, adding any who are either disabled or have all their dependencies met.
-      // this makes this an n^2 sort worst case. while we could likely do better on this complexity, this approach is simple and
-      // has a negligible runtime in up to hundreds of mods.
-      var added = new bool[Mods.Count];
-      var newOrder = new List<ModInfo>();
-      bool areDepsAdded(int index)
+      // Merge back while preserving disabled mod order
+      var result = new List<ModInfo>(Mods.Count);
+      var enabledIndex = 0;
+      for (var i = 0; i < Mods.Count; i++)
       {
-        if (!beforeDeps.TryGetValue(index, out var befores))
-          return true; // has no deps
-
-        foreach (var bindex in befores)
-          if (!added[bindex])
-            return false;
-
-        return true;
-      }
-
-      while (true)
-      {
-        var delayed = false;
-        var progress = false;
-        foreach (var mod in Mods)
+        var mod = Mods[i];
+        if (!mod.Enabled)
         {
-          if (added[mod.SortIndex])
-            continue;
-          if (!mod.Enabled || areDepsAdded(mod.SortIndex))
-          {
-            added[mod.SortIndex] = true;
-            newOrder.Add(mod);
-            progress = true;
-            if (delayed)
-              break; // if we skipped any this iteration, stop as soon as we add a new mod so we don't push others too far forward
-          }
-          else
-            delayed = true;
+          result.Add(mod);
         }
-        if (!progress)
-          break;
+        else
+        {
+          if (enabledIndex < resultEnabled.Count)
+            result.Add(resultEnabled[enabledIndex++]);
+        }
       }
 
-      // at this point just add any mods we haven't added yet. we already checked for circular dependencies above so this should
-      // only do anything if there is a bug above.
-      foreach (var mod in Mods)
-      {
-        if (!added[mod.SortIndex])
-          newOrder.Add(mod);
-      }
+      // Add any leftover enabled mods
+      while (enabledIndex < resultEnabled.Count)
+        result.Add(resultEnabled[enabledIndex++]);
 
-      Mods = newOrder;
+      Mods = result;
     }
 
     public static void SaveConfig()
