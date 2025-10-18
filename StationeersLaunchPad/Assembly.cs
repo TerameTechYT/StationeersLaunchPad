@@ -5,14 +5,6 @@ using System.Reflection;
 
 namespace StationeersLaunchPad
 {
-  public enum AssemblyType
-  {
-    Unknown = 0,
-    Mod,
-    Game,
-    Unity,
-  }
-
   public struct AssemblyInfo
   {
     public string Path;
