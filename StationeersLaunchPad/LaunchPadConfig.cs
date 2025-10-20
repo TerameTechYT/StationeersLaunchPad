@@ -538,11 +538,8 @@ namespace StationeersLaunchPad
       if (needsUpdate.Count > 0)
       {
         Logger.Global.Log($"Updating {needsUpdate.Count} workshop items");
-        if (Debug)
-        {
-          foreach (var item in needsUpdate)
-            Logger.Global.LogDebug($"- {item.Title} ({item.Id})");
-        }
+        foreach (var item in needsUpdate)
+          Logger.Global.LogInfo($"- {item.Title} ({item.Id})");
 
         await UniTask.WhenAll(needsUpdate.Select(item => item.DownloadAsync().AsUniTask()));
       }
