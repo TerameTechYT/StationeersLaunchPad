@@ -2,7 +2,7 @@ using Assets.Scripts;
 using Assets.Scripts.Networking.Transports;
 using Assets.Scripts.Serialization;
 using Assets.Scripts.Util;
-using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using Cysharp.Threading.Tasks;
 using Mono.Cecil;
@@ -18,7 +18,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
 using UnityEngine;
-using BepInEx.Bootstrap;
 
 namespace StationeersLaunchPad
 {
@@ -555,19 +554,18 @@ namespace StationeersLaunchPad
           };
 
       var dllFiles = Directory.GetFiles(mod.Path, "*.dll", SearchOption.AllDirectories);
-      var assemblies = await UniTask.WhenAll(dllFiles.Select(LoadAssembly));
-      mod.Assemblies.AddRange(assemblies);
-
-      var assetFiles = Directory.GetFiles(mod.Path, "*.assets", SearchOption.AllDirectories);
-      mod.AssetBundles.AddRange(assetFiles);
-    }
-
-    private static UniTask<AssemblyInfo> LoadAssembly(string file) =>
-        UniTask.RunOnThreadPool(() => new AssemblyInfo
+      foreach (var file in dllFiles)
+      {
+        mod.Assemblies.Add(new AssemblyInfo
         {
           Path = file,
           Definition = AssemblyDefinition.ReadAssembly(file, TypeLoader.ReaderParameters)
         });
+      }
+
+      var assetFiles = Directory.GetFiles(mod.Path, "*.assets", SearchOption.AllDirectories);
+      mod.AssetBundles.AddRange(assetFiles);
+    }
 
     public static void SortByDeps()
     {
