@@ -1,11 +1,11 @@
+using Assets.Scripts.Networking.Transports;
+using Steamworks.Ugc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
-using Assets.Scripts.Networking.Transports;
-using Steamworks.Ugc;
 using UnityEngine;
 
 namespace StationeersLaunchPad
@@ -27,6 +27,8 @@ namespace StationeersLaunchPad
 
     public ModAbout About;
 
+    public string Name => this.Wrapped.DirectoryName;
+    public string DisplayName => this.Source == ModSource.Core ? "Core" : this.About == null ? this.Path : this.About.Name;
     public string Path => this.Source == ModSource.Core ? "" : this.Wrapped.DirectoryPath;
     public string AboutPath => System.IO.Path.Combine(this.Path, "About");
     public string AboutXmlPath => System.IO.Path.Combine(this.AboutPath, "About.xml");
@@ -38,27 +40,12 @@ namespace StationeersLaunchPad
 
     public LoadedMod Loaded;
 
-    public string DisplayName
+    public ulong WorkshopHandle => this.Source switch
     {
-      get
-      {
-        if (this.Source == ModSource.Core)
-          return "Core";
-        if (this.About == null)
-          return this.Path;
-        return this.About.Name;
-      }
-    }
-
-    public ulong WorkshopHandle
-    {
-      get => this.Source switch
-      {
-        ModSource.Core => 1,
-        ModSource.Workshop => this.Wrapped.Id,
-        _ => this.About?.WorkshopHandle ?? ulong.MaxValue,
-      };
-    }
+      ModSource.Core => 1,
+      ModSource.Workshop => this.Wrapped.Id,
+      _ => this.About?.WorkshopHandle ?? 0,
+    };
 
     public bool SortBefore(ModInfo other)
     {
