@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StationeersLaunchPad", "Sta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaunchPadBooster", "LaunchPadBooster\LaunchPadBooster\LaunchPadBooster.csproj", "{9544610A-20E3-4BB0-93C6-6F11701CCA5D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{07348662-F5C3-495E-9993-B3B9176E0ED8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SLP", "SLP", "{07348662-F5C3-495E-9993-B3B9176E0ED8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
@@ -25,6 +25,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{07348662-F
 		Stationeers.VS.props = Stationeers.VS.props
 		Stationeers.VS.References.props = Stationeers.VS.References.props
 		Stationeers.VS.User.props = Stationeers.VS.User.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LBP", "LBP", "{81D3E2BB-EDFA-429D-A4C0-4EC353CA7F18}"
+	ProjectSection(SolutionItems) = preProject
+		LaunchPadBooster\.gitignore = LaunchPadBooster\.gitignore
+		LaunchPadBooster\README.md = LaunchPadBooster\README.md
+		LaunchPadBooster\LICENSE.md = LaunchPadBooster\LICENSE.md
+		LaunchPadBooster\Stationeers.VS.props = LaunchPadBooster\Stationeers.VS.props
+		LaunchPadBooster\Stationeers.VS.References.props = LaunchPadBooster\Stationeers.VS.References.props
+		LaunchPadBooster\Stationeers.VS.User.props = LaunchPadBooster\Stationeers.VS.User.props
 	EndProjectSection
 EndProject
 Global
@@ -56,5 +66,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EDAB6C2-23F0-4CA7-BA75-82B821B28A19}
 	EndGlobalSection
 EndGlobal
