@@ -31,7 +31,7 @@ namespace StationeersLaunchPad
     {
       ImGuiHelper.DrawWithPadding(() => ImGui.Begin("##preloaderauto", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoSavedSettings));
 
-      ImGuiHelper.Text($"StationeersLaunchPad {LaunchPadPlugin.pluginVersion}");
+      ImGuiHelper.Text($"StationeersLaunchPad {LaunchPadInfo.VERSION}");
       DrawLoadingState();
 
       ImGui.Spacing();
@@ -70,7 +70,7 @@ namespace StationeersLaunchPad
     {
       ImGuiHelper.DrawWithPadding2(() => ImGui.Begin("##preloadermanual", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoSavedSettings));
 
-      ImGuiHelper.TextDisabled(LaunchPadPlugin.pluginVersion);
+      ImGuiHelper.TextDisabled(LaunchPadInfo.VERSION);
       ImGuiHelper.DrawSameLine(() => ImGuiHelper.TextDisabled("|"), true);
 
       if (LaunchPadConfig.CheckUpdate)

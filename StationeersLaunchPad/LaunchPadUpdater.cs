@@ -58,7 +58,7 @@ namespace StationeersLaunchPad
           LaunchPadConfig.OneTimeBoosterInstall.Value = false;
           return;
         }
-        var targetTag = $"v{LaunchPadPlugin.pluginVersion}";
+        var targetTag = $"v{LaunchPadInfo.VERSION}";
         Logger.Global.Log($"Installing LaunchPadBooster from release {targetTag}");
         var release = await Github.FetchTagRelease(targetTag);
         if (release == null)
@@ -113,7 +113,7 @@ namespace StationeersLaunchPad
         return null;
 
       var latestVersion = new Version(latestRelease.TagName.TrimStart('V', 'v'));
-      var currentVersion = new Version(LaunchPadPlugin.pluginVersion.TrimStart('V', 'v'));
+      var currentVersion = new Version(LaunchPadInfo.VERSION.TrimStart('V', 'v'));
 
       if (latestVersion <= currentVersion)
       {
