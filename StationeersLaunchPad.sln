@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".SLP", ".SLP", "{07348662-F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".LBP", ".LBP", "{81D3E2BB-EDFA-429D-A4C0-4EC353CA7F18}"
 	ProjectSection(SolutionItems) = preProject
+		LaunchPadBooster\.editorconfig = LaunchPadBooster\.editorconfig
 		LaunchPadBooster\.gitignore = LaunchPadBooster\.gitignore
 		LaunchPadBooster\README.md = LaunchPadBooster\README.md
 		LaunchPadBooster\LICENSE.md = LaunchPadBooster\LICENSE.md
