@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<AssemblyName>StationeersLaunchPad</AssemblyName>
 		<RootNamespace>$(AssemblyName)</RootNamespace>
@@ -10,6 +10,18 @@
 
 	<!-- Import Game/Unity DLL references -->
 	<Import Project="$(SolutionDir)Stationeers.VS.References.props" />
+
+	<!-- ImGui DLL's -->
+	<ItemGroup Condition="'$(IsServer)' == 'True'">
+		<ProjectReference Include="$(SLPCompatibilityDirectory)\RG.ImGui\RG.ImGui.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(IsServer)' != 'True'">
+		<Reference Include="RG.ImGui">
+			<HintPath>$(StationeersManagedDirectory)\RG.ImGui.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(SLPCompatibilityDirectory)\StationeersMods.Interface\StationeersMods.Interface.csproj" />

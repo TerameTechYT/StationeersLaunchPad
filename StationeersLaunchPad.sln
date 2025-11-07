@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11201.2 d18.0
+VisualStudioVersion = 18.0.11201.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StationeersMods.Interface", "Compatibility\StationeersMods.Interface\StationeersMods.Interface.csproj", "{3ADB58E4-4E36-4E7D-BF51-EFACAE979EC6}"
 EndProject
@@ -18,13 +18,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".SLP", ".SLP", "{07348662-F
 		.gitignore = .gitignore
 		.gitmodules = .gitmodules
 		Directory.Build.props = Directory.Build.props
+		after.StationeersLaunchPad.sln.targets = after.StationeersLaunchPad.sln.targets
 		Directory.Build.targets = Directory.Build.targets
-		LICENSE.md = LICENSE.md
 		README.md = README.md
 		Stationeers.VS.props = Stationeers.VS.props
 		Stationeers.VS.References.props = Stationeers.VS.References.props
 		Stationeers.VS.User.props = Stationeers.VS.User.props
-		StationeersLaunchPad.sln.targets = StationeersLaunchPad.sln.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".LBP", ".LBP", "{81D3E2BB-EDFA-429D-A4C0-4EC353CA7F18}"
@@ -32,7 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".LBP", ".LBP", "{81D3E2BB-E
 		LaunchPadBooster\.editorconfig = LaunchPadBooster\.editorconfig
 		LaunchPadBooster\.gitignore = LaunchPadBooster\.gitignore
 		LaunchPadBooster\README.md = LaunchPadBooster\README.md
-		LaunchPadBooster\LICENSE.md = LaunchPadBooster\LICENSE.md
 		LaunchPadBooster\Stationeers.VS.props = LaunchPadBooster\Stationeers.VS.props
 		LaunchPadBooster\Stationeers.VS.References.props = LaunchPadBooster\Stationeers.VS.References.props
 		LaunchPadBooster\Stationeers.VS.User.props = LaunchPadBooster\Stationeers.VS.User.props
