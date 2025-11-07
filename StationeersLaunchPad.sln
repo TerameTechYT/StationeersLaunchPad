@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".LBP", ".LBP", "{81D3E2BB-E
 	ProjectSection(SolutionItems) = preProject
 		LaunchPadBooster\.editorconfig = LaunchPadBooster\.editorconfig
 		LaunchPadBooster\.gitignore = LaunchPadBooster\.gitignore
+		LICENSE = LICENSE
 		LaunchPadBooster\README.md = LaunchPadBooster\README.md
 		LaunchPadBooster\Stationeers.VS.props = LaunchPadBooster\Stationeers.VS.props
 		LaunchPadBooster\Stationeers.VS.References.props = LaunchPadBooster\Stationeers.VS.References.props
