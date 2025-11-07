@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts;
 using Cysharp.Threading.Tasks;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -32,7 +31,6 @@ namespace StationeersLaunchPad
           Logger.Global.LogDebug($"Removing update backup file {file.FullName}");
           file.Delete();
         }
-        LaunchPadConfig.PostUpdateCleanup.Value = false;
       }
       catch (Exception ex)
       {
@@ -40,7 +38,8 @@ namespace StationeersLaunchPad
       }
     }
 
-    public static async UniTask RunOneTimeBoosterInstall()
+    // returns true if booster is successfully installed
+    public static async UniTask<bool> RunOneTimeBoosterInstall()
     {
       try
       {
@@ -48,54 +47,50 @@ namespace StationeersLaunchPad
         if (installDir == null)
         {
           Logger.Global.LogWarning("Invalid install dir. skipping booster install");
-          return;
+          return false;
         }
         const string boosterName = "LaunchPadBooster.dll";
         var boosterPath = Path.Combine(installDir.FullName, boosterName);
         if (File.Exists(boosterPath))
         {
           // if file exists, this is a full install so nothing to do
-          LaunchPadConfig.OneTimeBoosterInstall.Value = false;
-          return;
+          return true;
         }
         var targetTag = $"v{LaunchPadInfo.VERSION}";
         Logger.Global.Log($"Installing LaunchPadBooster from release {targetTag}");
-        var release = await Github.FetchTagRelease(targetTag);
+        var release = await Github.LaunchPadRepo.FetchTagRelease(targetTag);
         if (release == null)
         {
-          LaunchPadConfig.AutoLoad = false;
           Logger.Global.LogError("Installation incomplete. Please download latest version from github.");
-          return;
+          return false;
         }
 
         var assetName = TargetAssetName(release);
         var asset = release.Assets.Find(asset => asset.Name == assetName);
         if (asset == null)
         {
-          LaunchPadConfig.AutoLoad = false;
           Logger.Global.LogError($"Failed to find {assetName} in release. Installation incomplete. Please download latest version from github.");
-          return;
+          return false;
         }
 
-        using (var archive = await Github.FetchZipArchive(asset))
+        using (var archive = await asset.FetchToMemory())
         {
           var entry = archive.Entries.First(entry => entry.Name == boosterName);
           if (entry == null)
           {
             Logger.Global.LogError($"Failed to find {boosterName} in {assetName}. Installation incomplete. Please download latest version from github.");
-            LaunchPadConfig.AutoLoad = false;
-            return;
+            return false;
           }
           entry.ExtractToFile(boosterPath);
         }
 
-        LaunchPadConfig.OneTimeBoosterInstall.Value = false;
+        return true;
       }
       catch (Exception ex)
       {
         Logger.Global.LogException(ex);
         Logger.Global.LogError("An error occurred during LaunchPadBooster install. Some mods may not function properly");
-        LaunchPadConfig.AutoLoad = false;
+        return false;
       }
     }
 
@@ -107,7 +102,7 @@ namespace StationeersLaunchPad
         return null;
       }
 
-      var latestRelease = await Github.FetchLatestRelease();
+      var latestRelease = await Github.LaunchPadRepo.FetchLatestRelease();
       // If we failed to get a release for whatever reason, just bail
       if (latestRelease == null)
         return null;
@@ -127,10 +122,6 @@ namespace StationeersLaunchPad
 
     public static async UniTask<bool> CheckShouldUpdate(Github.Release release)
     {
-      if (LaunchPadConfig.AutoUpdate)
-      {
-        return true;
-      }
       // if autoupdate is not enabled on server, just move on after the out-of-date message
       if (GameManager.IsBatchMode)
         return false;
@@ -152,7 +143,7 @@ namespace StationeersLaunchPad
         return true;
       }
 
-      var description = Github.FormatDescription(release.Description);
+      var description = release.FormatDescription();
       await LaunchPadAlertGUI.Show("Update Available", $"StationeersLaunchPad {release.TagName} is available, would you like to automatically download and update?\n\n{description}",
         new Vector2(800, 400),
         LaunchPadAlertGUI.DefaultPosition,
@@ -163,6 +154,7 @@ namespace StationeersLaunchPad
       return doUpdate;
     }
 
+    // returns true if update was successfully performed
     public static async UniTask<bool> UpdateToRelease(Github.Release release)
     {
       var assetName = TargetAssetName(release);
@@ -173,7 +165,7 @@ namespace StationeersLaunchPad
         return false;
       }
 
-      using (var archive = await Github.FetchZipArchive(asset))
+      using (var archive = await asset.FetchToMemory())
       {
         var sequence = UpdateSequence.Make(
           LaunchPadPaths.InstallDir,
