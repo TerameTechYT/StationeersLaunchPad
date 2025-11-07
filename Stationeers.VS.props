@@ -8,14 +8,12 @@
     <ErrorReport>none</ErrorReport>
     <LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
 
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Targets>AnyCPU</Targets>
     <OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
-    <Configurations>Debug;Release</Configurations>
-    <PlatformTarget>x64</PlatformTarget>
-    <Platforms>x64;x86</Platforms>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <!-- Do Not Change Anything Below -->
     <StationeersDirectory>$(SteamLibraryDirectory)\Stationeers</StationeersDirectory>
