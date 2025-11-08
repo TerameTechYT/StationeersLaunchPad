@@ -56,7 +56,7 @@ namespace StationeersLaunchPad
           // if file exists, this is a full install so nothing to do
           return true;
         }
-        var targetTag = $"v{LaunchPadPlugin.pluginVersion}";
+        var targetTag = $"v{LaunchPadInfo.VERSION}";
         Logger.Global.Log($"Installing LaunchPadBooster from release {targetTag}");
         var release = await Github.LaunchPadRepo.FetchTagRelease(targetTag);
         if (release == null)
@@ -108,7 +108,7 @@ namespace StationeersLaunchPad
         return null;
 
       var latestVersion = new Version(latestRelease.TagName.TrimStart('V', 'v'));
-      var currentVersion = new Version(LaunchPadPlugin.pluginVersion.TrimStart('V', 'v'));
+      var currentVersion = new Version(LaunchPadInfo.VERSION.TrimStart('V', 'v'));
 
       if (latestVersion <= currentVersion)
       {

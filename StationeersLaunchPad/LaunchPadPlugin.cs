@@ -8,16 +8,12 @@ using UnityEngine.LowLevel;
 
 namespace StationeersLaunchPad
 {
-  [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
+  [BepInPlugin(LaunchPadInfo.GUID, LaunchPadInfo.NAME, LaunchPadInfo.VERSION)]
   public class LaunchPadPlugin : BaseUnityPlugin
   {
-    public const string pluginGuid = "stationeers.launchpad";
-    public const string pluginName = "StationeersLaunchPad";
-    public const string pluginVersion = "0.2.17";
-
     void Awake()
     {
-      if (Harmony.HasAnyPatches(pluginGuid))
+      if (Harmony.HasAnyPatches(LaunchPadInfo.GUID))
         return;
 
       // If the windows steamworks assembly is not found, try to replace it with the linux one
@@ -32,7 +28,7 @@ namespace StationeersLaunchPad
       // referencing LaunchPadConfig fields in this method will force the class to initialize before the method starts
       // we need to add the resolve hook above before LaunchPadConfig initializes so the steamworks types will be valid on linux
 
-      var patchSuccess = LaunchPadPatches.RunPatches(new Harmony(pluginGuid));
+      var patchSuccess = LaunchPadPatches.RunPatches(new Harmony(LaunchPadInfo.GUID));
 
       var unityLogger = Debug.unityLogger as UnityEngine.Logger;
       unityLogger.logHandler = new LogWrapper(unityLogger.logHandler);
